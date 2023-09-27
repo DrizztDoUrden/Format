@@ -9,7 +9,7 @@ Set-Location $(git rev-parse --show-toplevel)
 
 $commands = $input `
 	| ? { Test-Path -PathType Leaf $_ } `
-	| % { "$ClangFormat -i -style=file $_" }
+	| % { "$ClangFormat -i -style=file '$_'" }
 
 if ($commands.Length -eq -0) { return }
 
