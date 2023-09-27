@@ -1,11 +1,10 @@
 #!/usr/bin/env pwsh
 
-Param([String]$With = "remotes/origin/develop")
+Param(
+	[String]$With = "remotes/origin/develop",
+	[String]$Filter = "\.h$|\.hpp$|\.c$|\.cpp$|\.h\.in$|\.hpp\.in$|\.cpp\.in$|\?CMakeLists.txt")
 
-$branch = git rev-parse --abbrev-ref HEAD
-
-$files = git diff --name-only "$With..$branch"
-
+$files = git diff --name-only "$With..$(git rev-parse --abbrev-ref HEAD)"
 $files += git clean -dn | % { $_.Substring(13) }
 
-$files
+$files | ? { $_ -Match $Filter }
