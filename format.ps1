@@ -9,7 +9,7 @@ Set-Location $(git rev-parse --show-toplevel)
 
 $commands = $input `
 	| ? { Test-Path -PathType Leaf $_ } `
-	| % { "$ClangFormat -i -style=file $file" }
+	| % { "$ClangFormat -i -style=file $_" }
 
 if ($Distro -eq "local")
 {
