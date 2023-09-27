@@ -21,8 +21,7 @@ if ($Distro -eq "local")
 }
 else
 {
-	if ($WhatIf) { return $commands | % { "wsl --distribution $Distro --exec $_" } }
-
-	wsl --distribution "$Distro" --exec $([String]::Join(" && ", $commands))
-	if ($LASTEXITCODE -ne 0) { Write-Error "Error formating `"$file`"." }
+	$wslCommand = "wsl --distribution `"$Distro`" --exec `"trap 'kill 0' SIGINT; $([String]::Join(" & ", $commands)) & wait`""
+	if ($WhatIf) { return $wslCommand }
+	Invoke-Expression $wslCommand
 }
