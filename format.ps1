@@ -16,15 +16,8 @@ if ($commands.Length -eq -0) { return }
 if ($Distro -eq "local")
 {
 	if ($WhatIf) { return $commands }
-
 	Import-Module SplitPipeline
-
-	$input | Split-Pipeline -Variable commands `
-	{ process {
-		$file = $_
-		& "$ClangFormat" -i "-style=file" $_
-		if ($LASTEXITCODE -ne 0) { Write-Error "Error formating `"$_`"." }
-	} }
+	$input | Split-Pipeline { process { Invoke-Expression $_ } }
 }
 else
 {
