@@ -11,6 +11,8 @@ $commands = $input `
 	| ? { Test-Path -PathType Leaf $_ } `
 	| % { "$ClangFormat -i -style=file $_" }
 
+if ($commands.Length -eq -0) { return }
+
 if ($Distro -eq "local")
 {
 	if ($WhatIf) { return $commands }
