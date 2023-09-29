@@ -11,7 +11,11 @@ $commands = $input `
 	| ? { Test-Path -PathType Leaf $_ } `
 	| % { "$ClangFormat -i -style=file '$_'" }
 
-if ($commands.Length -eq -0) { return }
+if ($commands.Length -eq -0)
+{
+	Write-Host "Nothing to format"
+	return
+}
 
 if ($Distro -eq "local")
 {
