@@ -3,7 +3,8 @@
 Param(
 	[String]$Distro = "local",
 	[String]$ClangFormat = "clang-format-12",
-	[Switch]$WhatIf)
+	[Switch]$WhatIf,
+	[Switch]$SingleThread)
 
 Set-Location $(git rev-parse --show-toplevel)
 
@@ -20,12 +21,29 @@ if ($commands.Length -eq -0)
 if ($Distro -eq "local")
 {
 	if ($WhatIf) { return $commands }
-	Import-Module SplitPipeline
-	$input | Split-Pipeline { process { Invoke-Expression $_ } }
+
+	if ($SingleThread)
+	{
+		$input | % { Invoke-Expression $_ }
+	}
+	else
+	{
+		$wd = pwd
+		Import-Module SplitPipeline
+		$commands | Split-Pipeline -Variable "wd" { process { Set-Location $wd; Invoke-Expression $_ } }
+	}
 }
 else
 {
-	$wslCommand = "wsl --distribution `"$Distro`" --exec `"trap 'kill 0' SIGINT; $([String]::Join(" & ", $commands)) & wait`""
+	if ($SingleThread)
+	{
+		$wslCommand = "wsl --distribution `"$Distro`" --exec `"$([String]::Join(" && ", $commands))`""
+	}
+	else
+	{
+		$wslCommand = "wsl --distribution `"$Distro`" --exec `"trap 'kill 0' SIGINT; $([String]::Join(" & ", $commands)) & wait`""
+	}
+
 	if ($WhatIf) { return $wslCommand }
 	Invoke-Expression $wslCommand
 }
