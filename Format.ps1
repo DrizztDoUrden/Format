@@ -4,13 +4,29 @@ Param(
 	[String]$Distro = "local",
 	[String]$ClangFormat = "clang-format-12",
 	[Switch]$WhatIf,
-	[Switch]$SingleThread)
+	[Switch]$SingleThread,
+	[Switch]$Diff)
 
 Set-Location $(git rev-parse --show-toplevel)
 
 $commands = $input `
-	| ? { Test-Path -PathType Leaf $_ } `
-	| % { "$ClangFormat -i -style=file '$_'" }
+	| % {
+		if (Test-Path -PathType Leaf $_)
+		{
+			if ($Diff)
+			{
+				"$ClangFormat -style=file '$_' | diff -p - $_"
+			}
+			else
+			{
+				"$ClangFormat -i -style=file '$_'"
+			}
+		}
+		else
+		{
+			Write-Warning "File doesn't exist: $_"
+		}
+	}
 
 if ($commands.Length -eq -0)
 {
