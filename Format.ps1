@@ -28,7 +28,7 @@ if ($Distro -eq "local")
 	}
 	else
 	{
-		$wd = pwd
+		$wd = Get-Location
 		Import-Module SplitPipeline
 		$commands | Split-Pipeline -Variable "wd" { process { Set-Location $wd; Invoke-Expression $_ } }
 	}
