@@ -24,7 +24,7 @@ if ($Distro -eq "local")
 
 	if ($SingleThread)
 	{
-		$input | % { Invoke-Expression $_ }
+		$commands | Invoke-Expression
 	}
 	else
 	{
