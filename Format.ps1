@@ -15,11 +15,11 @@ $commands = $input `
 		{
 			if ($Diff)
 			{
-				"$ClangFormat -style=file '$_' | diff -p - $_"
+				"& `"$ClangFormat`" -style=file '$_' | diff -p - $_"
 			}
 			else
 			{
-				"$ClangFormat -i -style=file '$_'"
+				"& `"$ClangFormat`" -i -style=file '$_'"
 			}
 		}
 		else
